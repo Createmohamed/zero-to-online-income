@@ -13,7 +13,7 @@
 
 /* Payment link. Set it ONCE here — every [data-buy] CTA reads it.
    While it is the placeholder, those buttons scroll to the price section. */
-const PAYMENT_LINK = "YOUR_PAYMENT_LINK_HERE";
+const PAYMENT_LINK = "https://solution73.gumroad.com/l/irofb";
 
 /* Price shown on the page and counted up in the $19 section. */
 const PRICE = { amount: 19, currency: "$" };
