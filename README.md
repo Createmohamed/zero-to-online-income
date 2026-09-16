@@ -3,10 +3,15 @@
 A static, scroll-driven site. No build step, no framework, no install.
 
 ```
-index.html      markup, SEO/Open Graph, Book JSON-LD, and the <template> the 3D book is stamped from
-style.css       visual system → the book → the acts → components → responsive → reduced motion
-script.js       config block, then the experience layer (GSAP + ScrollTrigger)
-assets/         images · fonts · icons (empty by default — the page needs no images)
+index.html          the experience: markup, SEO/Open Graph, Book JSON-LD, book <template>
+privacy.html        privacy policy          terms.html     terms of sale
+contact.html        contact page            404.html       not-found page
+style.css           visual system → book → acts → components → responsive → reduced motion
+script.js           config block, then the experience layer (GSAP + ScrollTrigger)
+vercel.json         clean URLs, security headers, cache policy
+robots.txt          sitemap.xml
+assets/images/      og.jpg (social card) · og-source.svg (its editable master) · book-cover-art.svg
+assets/icons/       favicon.svg · favicon-32.png · apple-touch-icon.png
 ```
 
 GSAP and ScrollTrigger load from cdnjs. Everything else is local. Scrolling is native; no smooth-scroll library.
@@ -53,3 +58,25 @@ If you change the price, also update `offers.price` in the JSON-LD block in `ind
 - **Motion hierarchy.** Scroll storytelling first (all of it scrubbed, nothing autoplays), section reveals second, hover third.
 - **Reduced motion.** With `prefers-reduced-motion: reduce`, `initStatic()` runs instead of the experience: no GSAP timelines, no scroll animation, the acts collapse into a readable static document with the book shown as a still composition. Every CTA and all copy remain present.
 - **Performance.** Transform/opacity/clip-path only, `will-change` on the handful of elements that need it, one debounced `ScrollTrigger.refresh()` behind resize/orientation/ResizeObserver, and no infinite loops (the scroll indicator's 1px sweep is the only ambient animation).
+
+
+## Before you announce the link
+
+Three things need your own facts. Search for the highlighted `[...]` fields:
+
+- `privacy.html` — `[DATE]`, `[YOUR EMAIL]`
+- `terms.html` — `[DATE]`, `[YOUR EMAIL]`, `[YOUR REFUND POLICY]`, `[YOUR COUNTRY / STATE]`
+- `contact.html` — `[YOUR EMAIL]`
+
+And if the deployed host is not `zero-to-online-income.vercel.app`, change the domain in `index.html` (canonical, `og:url`, `og:image`, `twitter:image`), `robots.txt`, `sitemap.xml`, and the `canonical` in each document page.
+
+## Production setup
+
+Deployed as a static site on Vercel — no build step, no dependencies.
+
+- **Clean URLs.** `vercel.json` sets `cleanUrls`, so the footer links `/privacy`, `/terms`, `/contact` resolve. On a plain local server use `privacy.html` etc. instead.
+- **Security headers** (`vercel.json`): a Content-Security-Policy that allows only self, cdnjs (GSAP) and Google Fonts; HSTS with preload; `nosniff`; `strict-origin-when-cross-origin` referrer; a Permissions-Policy that denies camera, microphone and geolocation; `frame-ancestors 'none'`. The CSP was verified against the live page — GSAP, fonts and the JSON-LD block all pass.
+- **Subresource Integrity.** Both GSAP files carry a `sha384` integrity hash, so a compromised CDN cannot swap the script. If you change the GSAP version, recompute the hashes or the scripts will refuse to run (the page then falls back to its static, no-JavaScript layout).
+- **Caching.** `/assets/*` is immutable for a year; CSS and JS revalidate weekly; the HTML is always revalidated. Stylesheet and script URLs carry a `?v=` number — bump it whenever you edit those files.
+- **Social card.** `assets/images/og.jpg` is 1200×630 with matching `og:image:width/height/alt` and a Twitter image. Re-render it from `og-source.svg` if the wording changes.
+- **No analytics.** Nothing is tracked, which is what the privacy page says. If you add analytics later, update `privacy.html` and add the domain to the CSP `script-src` and `connect-src`.

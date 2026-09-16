@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zero-to-online-income.vercel.app/sitemap.xml
